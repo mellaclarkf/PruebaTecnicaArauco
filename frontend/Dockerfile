@@ -1,16 +1,15 @@
-FROM node:16
+# frontend/Dockerfile
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Copiar package.json e instalar dependencias
 COPY package*.json ./
 RUN npm install
 
-# Copiar el código de la aplicación
 COPY . .
 
-# Exponer puerto
-EXPOSE 3000
+ENV PORT=3001 
 
-# Comando para ejecutar la aplicación
+EXPOSE 3001
+
 CMD ["npm", "start"]

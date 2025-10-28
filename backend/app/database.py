@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 # Usar variable de entorno para la conexión a la BD
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
-    "postgresql://portfolio_user:portfolio123@localhost:5432/project_portfolio"
+    "postgresql://portfolio_user:portfolio123@db:5432/project_portfolio"
 )
 
 engine = create_engine(DATABASE_URL)

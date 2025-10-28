@@ -1,52 +1,61 @@
-version: '3.8'
+name: project_portfolio_stack
 
 services:
   postgres:
-    image: postgres:13
+    image: postgres:15
+    container_name: project_postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: project_portfolio
       POSTGRES_USER: portfolio_user
       POSTGRES_PASSWORD: portfolio123
+      POSTGRES_DB: project_portfolio
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backend/init_scripts:/docker-entrypoint-initdb.d
-    networks:
-      - app-network
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/init_scripts:/docker-entrypoint-initdb.d  # ejecuta 01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio_user -d project_portfolio"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
   backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: project_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://portfolio_user:portfolio123@postgres:5432/project_portfolio
-    depends_on:
-      - postgres
+      PYTHONUNBUFFERED: 1
     volumes:
       - ./backend:/app
-    networks:
-      - app-network
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      - ./backend/init_scripts:/app/init_scripts
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    environment:
-      REACT_APP_API_URL: http://localhost:8000/api/v1
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: project_frontend
+    restart: unless-stopped
     depends_on:
       - backend
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    networks:
-      - app-network
+    ports:
+      - "3001:3001"
     command: npm start
 
 volumes:
-  postgres_data:
-
-networks:
-  app-network:
-    driver: bridge
+  pgdata:
