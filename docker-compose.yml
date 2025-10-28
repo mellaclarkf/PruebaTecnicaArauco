@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: project_portfolio
+      POSTGRES_USER: portfolio_user
+      POSTGRES_PASSWORD: portfolio123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init_scripts:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://portfolio_user:portfolio123@postgres:5432/project_portfolio
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: http://localhost:8000/api/v1
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    command: npm start
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
