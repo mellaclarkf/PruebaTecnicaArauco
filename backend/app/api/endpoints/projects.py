@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from app.database import get_db
-from models import project
+from app.models import project, User, Estado
 from app.schemas.project_schemas import ProjectCreate, ProjectUpdate, ProjectOut
 from typing import List
 
-router = APIRouter(prefix="/proyectos", tags=["proyectos"])
+router = APIRouter()#prefix="/proyectos", tags=["proyectos"]
 
 
 @router.get("/", response_model=List[ProjectOut])
