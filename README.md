@@ -5,7 +5,7 @@ Permite gestionar proyectos, usuarios y estados con una arquitectura limpia y co
 
 ---
 
-## 🚀 Tecnologías principales
+## Tecnologías principales
 
 | Componente | Tecnología |
 |-------------|-------------|
@@ -50,7 +50,7 @@ Verifica con:
       Frontend (Vite React)	http://localhost:3001
     	Interfaz de usuario
 
-## 📂 Estructura del proyecto
+## Estructura del proyecto
 
 project-portfolio/
 ├── docker-compose.yml
