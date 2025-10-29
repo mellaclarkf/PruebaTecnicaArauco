@@ -9,7 +9,7 @@ app = FastAPI(title="Project Portfolio API", version="1.0.0")
 # CORS 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # o ["http://localhost:3001"] si prefieres limitarlo
+    allow_origins=["*"],  # o ["http://localhost:3001"] 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
