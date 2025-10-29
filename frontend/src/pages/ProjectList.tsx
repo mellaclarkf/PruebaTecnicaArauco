@@ -26,7 +26,7 @@ const ProjectList: React.FC = () => {
 
   const { role, loginAs, logout, isAuthenticated } = useAuth();
 
-  // Cargar proyectos
+  // 🔹 Cargar proyectos
   const fetchProjects = async () => {
     try {
       setLoading(true);
@@ -43,19 +43,23 @@ const ProjectList: React.FC = () => {
     fetchProjects();
   }, []);
 
-  // Guardar (crear o editar)
+  // 🔹 Guardar (crear o editar)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editing) {
+        // 🔄 Actualizar proyecto existente
         await api.patch(`/proyectos/${editing.id}`, {
           title: form.title,
           description: form.description,
           estado_id: form.estado_id,
         });
       } else {
+        // ➕ Crear nuevo proyecto
         await api.post("/proyectos/", form);
       }
+
+      // 🔁 Refrescar lista y limpiar formulario
       setShowForm(false);
       setEditing(null);
       setForm({ title: "", description: "", user_id: 1, estado_id: 1 });
@@ -65,11 +69,11 @@ const ProjectList: React.FC = () => {
     }
   };
 
-  // Editar proyecto
+  // 🔹 Editar proyecto
   const handleEdit = (p: Project) => {
     setEditing(p);
     setForm({
-      title: p.title,
+      title: p.name,
       description: p.description,
       user_id: p.user_id,
       estado_id: p.estado_id,
@@ -77,7 +81,7 @@ const ProjectList: React.FC = () => {
     setShowForm(true);
   };
 
-  // Eliminar proyecto
+  // 🔹 Eliminar proyecto
   const handleDelete = async (p: Project) => {
     if (!confirm(`¿Eliminar el proyecto "${p.title}"?`)) return;
     try {
@@ -106,13 +110,20 @@ const ProjectList: React.FC = () => {
       </header>
 
       {isAuthenticated && role === "editor" && !showForm && (
-        <button onClick={() => { setEditing(null); setShowForm(true); }}>
+        <button
+          onClick={() => {
+            setEditing(null);
+            setForm({ title: "", description: "", user_id: 1, estado_id: 1 });
+            setShowForm(true);
+          }}
+        >
           + Nuevo Proyecto
         </button>
       )}
 
       {showForm && (
         <form
+          key={editing ? editing.id : "new"}
           onSubmit={handleSubmit}
           style={{
             display: "flex",
@@ -134,12 +145,15 @@ const ProjectList: React.FC = () => {
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
-          <button type="submit">Guardar</button>
+          <button type="submit">
+            {editing ? "Guardar cambios" : "Guardar"}
+          </button>
           <button
             type="button"
             onClick={() => {
               setShowForm(false);
               setEditing(null);
+              setForm({ title: "", description: "", user_id: 1, estado_id: 1 });
             }}
           >
             Cancelar
