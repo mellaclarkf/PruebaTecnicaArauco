@@ -41,22 +41,33 @@ services:
       sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: project_frontend
-    restart: unless-stopped
-    depends_on:
-      - backend
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - VITE_API_URL=http://backend:8000/api
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    ports:
-      - "3001:3001"
-    command: npm run dev -- --host 0.0.0.0 --port 3001
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      container_name: project_frontend
+      restart: unless-stopped
+
+      # Espera a que el backend esté operativo
+      depends_on:
+        backend:
+          condition: service_started
+
+      environment:
+        # Permite el hot reload en Docker (Vite)
+        - CHOKIDAR_USEPOLLING=true
+
+      volumes:
+        # Mapea tu código fuente local (para desarrollo en vivo)
+        - ./frontend:/app
+        # Evita que node_modules del host reemplace los del contenedor
+        - /app/node_modules
+
+      ports:
+        # Puerto 3001 interno → 3001 visible en tu máquina
+        - "3001:3001"
+
+      # Vite en modo desarrollo, escuchando en 0.0.0.0:3001
+      command: npm run dev -- --host 0.0.0.0 --port 3001
 
 volumes:
   pgdata:

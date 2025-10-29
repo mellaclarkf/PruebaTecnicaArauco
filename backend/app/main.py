@@ -3,27 +3,25 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
 from app.api.endpoints import projects, users, estados
 from init_scripts.init_db import init_database  # Inicializa la bd
-from app.api.endpoints import projects
-
-# Crear tablas y poblar datos iniciales
-init_database()
 
 app = FastAPI(title="Project Portfolio API", version="1.0.0")
 
+# ✅ CORS debe ir inmediatamente después de crear la app
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3001",
-        "http://127.0.0.1:3001"
-    ],
+    allow_origins=["*"],  # o ["http://localhost:3001"] si prefieres limitarlo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ✅ Recién ahora se pueden incluir los routers
 app.include_router(users.router, tags=["users"])
 app.include_router(projects.router, tags=["projects"])
-app.include_router(estados.router, tags=["estados"]) 
+app.include_router(estados.router, tags=["estados"])
+
+# ✅ Y al final puedes inicializar la base de datos
+init_database()
 
 @app.get("/")
 def read_root():
@@ -32,3 +30,8 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+
+@app.options("/test-cors")
+def test_cors():
+    return {"ok": True}

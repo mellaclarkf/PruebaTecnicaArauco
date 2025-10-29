@@ -56,3 +56,7 @@ def eliminar_proyecto(proyecto_id: int, db: Session = Depends(get_db)):
     proyecto_db.deleted = True
     db.commit()
     return {"message": "Proyecto marcado como eliminado"}
+
+@router.options("/", include_in_schema=False)
+async def opciones_proyectos():
+    return {}
