@@ -2,8 +2,12 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache bash git
+
 COPY package*.json ./
 RUN npm install
+
+RUN npm install -D tailwindcss@3.4.14 postcss autoprefixer
 
 COPY . .
 

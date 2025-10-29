@@ -6,7 +6,7 @@ from init_scripts.init_db import init_database  # Inicializa la bd
 
 app = FastAPI(title="Project Portfolio API", version="1.0.0")
 
-# ✅ CORS debe ir inmediatamente después de crear la app
+# CORS 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # o ["http://localhost:3001"] si prefieres limitarlo
@@ -15,12 +15,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Recién ahora se pueden incluir los routers
+# rutas
 app.include_router(users.router, tags=["users"])
 app.include_router(projects.router, tags=["projects"])
 app.include_router(estados.router, tags=["estados"])
 
-# ✅ Y al final puedes inicializar la base de datos
+# 
 init_database()
 
 @app.get("/")

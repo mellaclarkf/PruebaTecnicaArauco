@@ -1,47 +1,64 @@
-import React from 'react';
-import { Project } from '@types/project';
-import { useAuth } from '@context/AuthContext';
+import React from "react";
+import { useAuth } from "@context/AuthContext";
+
+interface ProjectRow {
+  id: number;
+  name: string;
+  description: string;
+}
 
 interface Props {
-  projects: Project[];
-  onEdit?: (p: Project) => void;
-  onDelete?: (p: Project) => void;
+  projects: ProjectRow[];
+  onEdit?: (p: ProjectRow) => void;
+  onDelete?: (p: ProjectRow) => void;
 }
 
 const ProjectTable: React.FC<Props> = ({ projects, onEdit, onDelete }) => {
   const { role } = useAuth();
-  const canEdit = role === 'editor';
+  const canEdit = role === "editor";
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
+    <div className="overflow-x-auto bg-white shadow rounded-lg">
+      <table className="w-full border-collapse">
+        <thead className="bg-gray-100">
           <tr>
-            <th style={th}>Nombre</th>
-            <th style={th}>Descripción</th>
-            <th style={th}>Inicio</th>
-            <th style={th}>Término</th>
-            {canEdit && <th style={th}>Acciones</th>}
+            <th className="text-left p-3 border-b">Título</th>
+            <th className="text-left p-3 border-b">Descripción</th>
+            {canEdit && <th className="text-left p-3 border-b">Acciones</th>}
           </tr>
         </thead>
         <tbody>
-          {projects.map((p) => (
-            <tr key={p.id}>
-              <td style={td}>{p.name}</td>
-              <td style={td}>{p.description ?? '-'}</td>
-              <td style={td}>{p.start_date ?? '-'}</td>
-              <td style={td}>{p.end_date ?? '-'}</td>
-              {canEdit && (
-                <td style={td}>
-                  <button onClick={() => onEdit?.(p)}>Editar</button>{' '}
-                  <button onClick={() => onDelete?.(p)}>Eliminar</button>
-                </td>
-              )}
-            </tr>
-          ))}
-          {projects.length === 0 && (
+          {projects.length > 0 ? (
+            projects.map((p) => (
+              <tr key={p.id} className="hover:bg-gray-50">
+                <td className="p-3 border-b">{p.name}</td>
+                <td className="p-3 border-b">{p.description}</td>
+                {canEdit && (
+                  <td className="p-3 border-b">
+                    <button
+                      onClick={() => onEdit?.(p)}
+                      className="mr-2 px-3 py-1 bg-yellow-400 text-white rounded hover:bg-yellow-500"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => onDelete?.(p)}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                )}
+              </tr>
+            ))
+          ) : (
             <tr>
-              <td style={td} colSpan={canEdit ? 5 : 4}>Sin proyectos</td>
+              <td
+                colSpan={canEdit ? 3 : 2}
+                className="p-4 text-center text-gray-500"
+              >
+                No hay proyectos disponibles
+              </td>
             </tr>
           )}
         </tbody>
@@ -49,8 +66,5 @@ const ProjectTable: React.FC<Props> = ({ projects, onEdit, onDelete }) => {
     </div>
   );
 };
-
-const th: React.CSSProperties = { textAlign: 'left', borderBottom: '1px solid #ddd', padding: '8px' };
-const td: React.CSSProperties = { borderBottom: '1px solid #eee', padding: '8px' };
 
 export default ProjectTable;
