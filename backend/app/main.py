@@ -13,18 +13,17 @@ app = FastAPI(title="Project Portfolio API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://frontend:3000",
-        "http://127.0.0.1:3000"
+        "http://localhost:3001",
+        "http://127.0.0.1:3001"
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(users.router, prefix="/api/v1", tags=["users"])
-app.include_router(projects.router, prefix="/api/v1", tags=["projects"])
-app.include_router(estados.router, prefix="/api/v1", tags=["estados"]) 
+app.include_router(users.router, tags=["users"])
+app.include_router(projects.router, tags=["projects"])
+app.include_router(estados.router, tags=["estados"]) 
 
 @app.get("/")
 def read_root():
