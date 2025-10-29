@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.api.endpoints import projects, users
-from init_scripts.init_db import init_database  # 
+from app.api.endpoints import projects, users, estados
+from init_scripts.init_db import init_database  # Inicializa la bd
+from app.api.endpoints import projects
 
 # Crear tablas y poblar datos iniciales
 init_database()
@@ -21,8 +22,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(projects.router, prefix="/api/v1", tags=["projects"])
 app.include_router(users.router, prefix="/api/v1", tags=["users"])
+app.include_router(projects.router, prefix="/api/v1", tags=["projects"])
+app.include_router(estados.router, prefix="/api/v1", tags=["estados"]) 
 
 @app.get("/")
 def read_root():
