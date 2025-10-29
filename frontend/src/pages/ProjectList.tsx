@@ -66,7 +66,7 @@ const ProjectList: React.FC = () => {
   const handleEdit = (p: Project) => {
     setEditing(p);
     setForm({
-      title: p.title,
+      title: p.name,
       description: p.description,
       user_id: p.user_id,
       estado_id: p.estado_id,
